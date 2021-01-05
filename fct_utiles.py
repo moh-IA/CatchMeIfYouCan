@@ -5,6 +5,7 @@ from PIL import Image
 import numpy as np
 import sys
 import csv
+import shutil
 
 
 # Définition des variables
@@ -36,9 +37,6 @@ def ensure_data_loaded():
     else :
         print('Datas already downloaded.')
 
-    # for objet in objet_path :
-    #     if os.path.exists(f'{RAW_LOCAL_PATH}{objet}') == False:
-    #         extract_data(objet)
     if os.path.exists(f'{RAW_LOCAL_PATH}cifar-100/') == False:
         extract_data()
 
@@ -56,12 +54,23 @@ def dl_data ():
 def extract_data():
     print (f'Extracting...')
     with zipfile.ZipFile(ZIP_LOCAL_PATH, 'r') as z:
-        z.extractall(RAW_LOCAL_PATH) 
-        # for filename in z.namelist():
-        #     if filename.startswith(path):
-        #         z.extract(filename, RAW_LOCAL_PATH)
+        z.extractall(f'{RAW_LOCAL_PATH}cifar-100/') 
 
     print ('Successfull.')
+
+
+def copy_data(objets):
+    for objet in objets :
+        testpathsource = RAW_LOCAL_PATH + 'cifar-100/test/' + objet
+        trainpathsource = RAW_LOCAL_PATH + 'cifar-100/train/' + objet
+        testpathdest = CURATED_LOCAL_PATH + 'test/' + objet
+        trainpathdest = CURATED_LOCAL_PATH + 'train/' + objet
+
+        shutil.copytree(testpathsource, testpathdest)
+        shutil.copytree(trainpathsource, trainpathdest)
+
+
+    print ('Files successfully copied.')
 
 
 def png_to_csv (car_path, number) :
