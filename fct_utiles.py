@@ -13,7 +13,8 @@ DATAS_LOCAL_PATH = './DATAS/'
 RAW_LOCAL_PATH = DATAS_LOCAL_PATH + 'RAW/'
 ZIP_LOCAL_PATH = RAW_LOCAL_PATH + 'cifar-100.zip'
 CURATED_LOCAL_PATH = DATAS_LOCAL_PATH + 'CURATED/'
-DATASET_PATH = CURATED_LOCAL_PATH + 'dataset.csv'
+DATASET_TRAIN_PATH = CURATED_LOCAL_PATH + 'dataset_train.csv'
+DATASET_TEST_PATH = CURATED_LOCAL_PATH + 'dataset_test.csv'
 MODELS_LOCAL_PATH = './MODELS/'
 URL = 'https://stdatalake010.blob.core.windows.net/public/cifar-100.zip'
 
@@ -60,54 +61,63 @@ def extract_data():
 
 
 def copy_data(objets):
-    for objet in objets :
-        testpathsource = RAW_LOCAL_PATH + 'cifar-100/test/' + objet
-        trainpathsource = RAW_LOCAL_PATH + 'cifar-100/train/' + objet
-        testpathdest = CURATED_LOCAL_PATH + 'test/' + objet
-        trainpathdest = CURATED_LOCAL_PATH + 'train/' + objet
+    itempathtest = []
+    itempathtrain = []
 
-        shutil.copytree(testpathsource, testpathdest)
+    shutil.rmtree(CURATED_LOCAL_PATH + 'test/')
+    shutil.rmtree(CURATED_LOCAL_PATH + 'train/')
+    
+    for objet in objets :
+        testpathsource = RAW_LOCAL_PATH + 'cifar-100/test/' + objet + '/'
+        trainpathsource = RAW_LOCAL_PATH + 'cifar-100/train/' + objet + '/'
+        testpathdest = CURATED_LOCAL_PATH + 'test/' + objet + '/'
+        trainpathdest = CURATED_LOCAL_PATH + 'train/' + objet + '/'
+
+        itempathtest.append(testpathdest)
+        itempathtrain.append(trainpathdest)
+
+        shutil.copytree(testpathsource, testpathdest)       
         shutil.copytree(trainpathsource, trainpathdest)
 
 
-    print ('Files successfully copied.')
+    print ('Echantillon copié dans dossier CURATED.')
 
 
-def png_to_csv (car_path, number) :
-
-    fullRawDir = []
-
-    for cp in car_path :
-        frd = f'{RAW_LOCAL_PATH}{cp}'
-        fullRawDir.append(frd)
+def png_to_csv (liste, path, step) :
 
     form='.png'
     fileList = []
 
-    for directory in fullRawDir :
+    if step == 'train':
+        DATASET_PATH = DATASET_TRAIN_PATH
+        first_index_label = 22
+
+    else :
+        DATASET_PATH = DATASET_TEST_PATH
+        first_index_label = 21
+
+
+
+    for directory in path :
         for root, dirs, files in os.walk(directory, topdown=False):
-            n = 0
             for name in files:
-                if n == number :
-                    break
-                else :
-                    if name.endswith(form):
-                        fullName = f'{root}{name}'
-                        fileList.append(fullName)
-                        n += 1
+                if name.endswith(form):
+                    fullName = f'{root}{name}'
+                    fileList.append(fullName)
     
     if os.path.exists(DATASET_PATH) :
         os.remove(DATASET_PATH)
 
+
     with open(DATASET_PATH, 'a') as f:
         for filename in fileList:
 
-            lettre = filename[29]
-            label = alphabet.index(lettre)
+            item = filename[-8:-4]
+            label = liste.index(filename[first_index_label:-9])
 
             img_file = Image.open(filename)
 
-            value = np.asarray(img_file.getdata(),dtype=np.int).reshape((img_file.size[1],img_file.size[0]))
+            value = np.asarray(img_file.getdata(),dtype=np.int).reshape((img_file.size[1],img_file.size[0], 3))
             value = np.insert(value, 0, label)
             value = value.flatten()
 
