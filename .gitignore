@@ -1,3 +1,10 @@
+<<<<<<< HEAD
 data/
 .vscode/
 yolo/
+=======
+DATAS/
+.vscode/
+__pycache__/
+>>>>>>> 38743670bfc975bf7e725c8e79b14048498a204a
+model/
