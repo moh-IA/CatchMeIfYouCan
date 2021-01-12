@@ -1,3 +1,9 @@
 DATAS/
 .vscode/
 __pycache__/
+
+MODELS/
+
+LittleSister_experimentation.ipynb
+
+LittleSister_final.ipynb
