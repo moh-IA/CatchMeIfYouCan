@@ -13,8 +13,7 @@ DATAS_LOCAL_PATH = './DATAS/'
 RAW_LOCAL_PATH = DATAS_LOCAL_PATH + 'RAW/'
 ZIP_LOCAL_PATH = RAW_LOCAL_PATH + 'cifar-100.zip'
 CURATED_LOCAL_PATH = DATAS_LOCAL_PATH + 'CURATED/'
-DATASET_TRAIN_PATH = CURATED_LOCAL_PATH + 'dataset_train.csv'
-DATASET_TEST_PATH = CURATED_LOCAL_PATH + 'dataset_test.csv'
+DATASET_PATH = CURATED_LOCAL_PATH + 'dataset.csv'
 MODELS_LOCAL_PATH = './MODELS/'
 URL = 'https://stdatalake010.blob.core.windows.net/public/cifar-100.zip'
 
@@ -64,14 +63,22 @@ def copy_data(objets):
     itempathtest = []
     itempathtrain = []
 
-    shutil.rmtree(CURATED_LOCAL_PATH + 'test/')
-    shutil.rmtree(CURATED_LOCAL_PATH + 'train/')
+    curatedTestPath = CURATED_LOCAL_PATH + 'test/'
+    curatedTrainPath = CURATED_LOCAL_PATH + 'train/'
+
+    if not os.path.exists(curatedTestPath):
+        os.mkdir(curatedTestPath)
+    if not os.path.exists(curatedTrainPath):
+        os.mkdir(curatedTrainPath)
     
+    shutil.rmtree(curatedTestPath)
+    shutil.rmtree(curatedTrainPath)
+  
     for objet in objets :
         testpathsource = RAW_LOCAL_PATH + 'cifar-100/test/' + objet + '/'
         trainpathsource = RAW_LOCAL_PATH + 'cifar-100/train/' + objet + '/'
-        testpathdest = CURATED_LOCAL_PATH + 'test/' + objet + '/'
-        trainpathdest = CURATED_LOCAL_PATH + 'train/' + objet + '/'
+        testpathdest = curatedTestPath + objet + '/'
+        trainpathdest = curatedTrainPath + objet + '/'
 
         itempathtest.append(testpathdest)
         itempathtrain.append(trainpathdest)
@@ -81,36 +88,40 @@ def copy_data(objets):
 
 
     print ('Echantillon copié dans dossier CURATED.')
+    return itempathtrain, itempathtest
 
 
-def png_to_csv (liste, path, step) :
+def png_to_csv (liste, number) :
 
     form='.png'
     fileList = []
 
-    if step == 'train':
-        DATASET_PATH = DATASET_TRAIN_PATH
-        first_index_label = 22
-
-    else :
-        DATASET_PATH = DATASET_TEST_PATH
-        first_index_label = 21
-
-
-
-    for directory in path :
-        for root, dirs, files in os.walk(directory, topdown=False):
-            for name in files:
-                if name.endswith(form):
-                    fullName = f'{root}{name}'
-                    fileList.append(fullName)
+    for objet in liste :
+        trainPathSource = RAW_LOCAL_PATH + 'cifar-100/train/' + objet + '/'
+        testPathSource = RAW_LOCAL_PATH + 'cifar-100/test/' + objet + '/'
+        for directory in trainPathSource, testPathSource :
+            for root, dirs, files in os.walk(directory, topdown=False):
+                n = 0
+                for name in files:
+                    if n == number :
+                        break
+                    else :
+                        if name.endswith(form):
+                            fullName = f'{root}{name}'
+                            fileList.append(fullName)
+                            n += 1
     
     if os.path.exists(DATASET_PATH) :
         os.remove(DATASET_PATH)
 
-
     with open(DATASET_PATH, 'a') as f:
         for filename in fileList:
+
+            step = filename[22:26]
+            if step == 'trai' :
+                first_index_label = 28
+            elif step == 'test' :
+                first_index_label = 27
 
             item = filename[-8:-4]
             label = liste.index(filename[first_index_label:-9])
@@ -126,3 +137,24 @@ def png_to_csv (liste, path, step) :
                 writer.writerow(value)
     
     print ('All png files convert to a csv file.')
+
+
+def copy_data2(objets):
+    itempath = []
+
+    CURATED_LOCAL_PATH
+
+    for objet in objets :
+        testpathsource = RAW_LOCAL_PATH + 'cifar-100/test/' + objet + '/'
+        trainpathsource = RAW_LOCAL_PATH + 'cifar-100/train/' + objet + '/'
+        pathdest = CURATED_LOCAL_PATH + objet + '/'
+
+        itempath.append(pathdest)
+
+        shutil.copytree(testpathsource, pathdest)       
+        shutil.copytree(trainpathsource, pathdest)
+
+
+    print ('Echantillon copié dans dossier CURATED.')
+
+
