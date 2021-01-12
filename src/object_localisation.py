@@ -24,20 +24,21 @@ class Localization():
 
 
 
-    def create_dict(self, path_train):
-        """
-        Create dictionary with names of classes and indices
-        """
-        indice = 0
-        for folder in os.listdir(path_train):
-            self.classes[folder] = indice
-            indice += 1
-        return self.classes
+    # def create_dict(self, path_train):
+    #     """
+    #     Create dictionary with names of classes and indices
+    #     """
+    #     indice = 0
+    #     for folder in os.listdir(path_train):
+    #         self.classes[folder] = indice
+    #         indice += 1
+    #     return self.classes
     
     def get_classe(self, n):
         """
         return classe of image
         """
+        self.classes = {'apple':0, 'forest': 1, 'crocodile':2}
         for classe , value in self.classes.items():
             if n == value:
                 return classe
@@ -79,7 +80,7 @@ class Localization():
                 # scores = obj[5:]
                 # class_id = np.argmax(scores)
                 confidence = obj[4]
-                if confidence > 0.979:
+                if confidence > 0.7:
                     # Object detected
                     x_center = int(obj[0] * self.width)
                     y_center = int(obj[1] * self.height)
@@ -103,11 +104,11 @@ class Localization():
         self.number_of_obj_detected = len(self.bounding_boxes)
         return self.indexes, self.number_of_obj_detected
     
-    def object_detection(self, model,train_path, image_test_path, weights_path, conf_path):
+    def object_detection(self, model, image_test_path, weights_path, conf_path):
         """
         """
         self.yolo_network(weights_path,conf_path)
-        self.create_dict(train_path)
+        # self.create_dict(train_path)
         self.read_image(image_test_path)
        
         self.get_net_output()
