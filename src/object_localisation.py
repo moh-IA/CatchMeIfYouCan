@@ -134,7 +134,7 @@ class Localization():
                 
             
                 cv2.rectangle(self.image, (x, y), (x + w, y + h), (0,0,255), 2)
-                cv2.putText(self.image, label, (x, y+20), cv2.FONT_HERSHEY_PLAIN, 1 , (0, 0, 0) ,2)
+                cv2.putText(self.image, label, (x, y+20), cv2.FONT_HERSHEY_PLAIN, 1 , (0,255,128) ,2)
 
         cv2.imshow("Image", self.image)
         cv2.waitKey(0)

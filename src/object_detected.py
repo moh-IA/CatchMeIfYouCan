@@ -100,7 +100,7 @@ for box in range(number_of_obj_detected):
         
        
         cv2.rectangle(img, (x, y), (x + w, y + h), (0,0,255), 2)
-        cv2.putText(img, label, (x, y+20), font, 1 , (0, 0, 0) ,2)
+        cv2.putText(img, label, (x, y+20), font, 1 , (255, 0, 0) ,2)
 
 
 
