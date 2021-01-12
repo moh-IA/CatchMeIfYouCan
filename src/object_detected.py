@@ -29,7 +29,7 @@ def get_classe(n):
             return classe
 
 
-test_cnn_model_2 = keras.models.load_model("../model/model_v3.model")
+test_cnn_model_2 = keras.models.load_model("../model/model_v2.model")
 
 
 
